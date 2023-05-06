@@ -197,17 +197,14 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 			return
 		}
 
-		args := action.Arguments.GetStruct()
-
-		chatID := args["chat_id"]
-		chatID.Integer = telego.ToPtr(update.Message.Chat.ID)
-		args["chat_id"] = chatID
-
-		text := args["text"]
-		text.String = telego.ToPtr(rest)
-		args["text"] = text
-
-		_, err = action.Do(action.Arguments)
+		_, err = action.Do(actions.ActionArgs{
+			Data: actions.SendMessageData{
+				Text: rest,
+			},
+			Context: actions.SendMessageContext{
+				ChatID: update.Message.Chat.ID,
+			},
+		})
 		if err != nil {
 			s.log.Error(err)
 		}
