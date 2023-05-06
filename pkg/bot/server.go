@@ -8,12 +8,15 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hibiken/asynq"
 	"github.com/mymmrac/telego"
 	th "github.com/mymmrac/telego/telegohandler"
 	"github.com/samber/do"
 	"github.com/telle-bots/bot-runner/pkg/config"
+	"github.com/telle-bots/bot-runner/pkg/logic"
+	"github.com/telle-bots/bot-runner/pkg/logic/actions"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
@@ -44,6 +47,7 @@ type TaskServer struct {
 	srv              *asynq.Server
 	mux              *asynq.ServeMux
 	webhookSrv       *WebhookServer
+	actionManager    *logic.ActionManager
 }
 
 func NewTaskServer(in *do.Injector) (*TaskServer, error) {
@@ -70,6 +74,11 @@ func NewTaskServer(in *do.Injector) (*TaskServer, error) {
 		return nil, fmt.Errorf("webhook server: %w", err)
 	}
 
+	actionManager, err := do.Invoke[*logic.ActionManager](in)
+	if err != nil {
+		return nil, fmt.Errorf("action manager: %w", err)
+	}
+
 	srv := asynq.NewServer(
 		redisCfg,
 		asynq.Config{
@@ -88,6 +97,7 @@ func NewTaskServer(in *do.Injector) (*TaskServer, error) {
 		srv:              srv,
 		mux:              mux,
 		webhookSrv:       webhookSrv,
+		actionManager:    actionManager,
 	}
 	runner.init()
 
@@ -167,9 +177,40 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	// TODO: Register bot handlers here
+	ac := s.actionManager.Actions(
+		actions.NewBotAction(bot),
+	)
+
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
+		if update.Message == nil {
+			return
+		}
 		s.log.Debug("Update ", update.UpdateID, " ", update.Message.Text)
+
+		actionName, rest, ok := strings.Cut(update.Message.Text, ": ")
+		if !ok {
+			return
+		}
+
+		action, ok := ac[actionName]
+		if !ok {
+			return
+		}
+
+		args := action.Arguments.GetStruct()
+
+		chatID := args["chat_id"]
+		chatID.Integer = telego.ToPtr(update.Message.Chat.ID)
+		args["chat_id"] = chatID
+
+		text := args["text"]
+		text.String = telego.ToPtr(rest)
+		args["text"] = text
+
+		_, err = action.Do(action.Arguments)
+		if err != nil {
+			s.log.Error(err)
+		}
 	})
 
 	go bh.Start()
