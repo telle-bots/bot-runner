@@ -1,13 +1,15 @@
 package actions
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Action struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description,omitempty"`
-	Do          ActionDo `json:"-"`
-	Arguments   []byte   `json:"arguments,omitempty"`
-	Returns     []byte   `json:"returns,omitempty"`
+	Name        string          `json:"name"`
+	Description string          `json:"description,omitempty"`
+	Arguments   json.RawMessage `json:"arguments,omitempty"`
+	Returns     json.RawMessage `json:"returns,omitempty"`
 }
 
 type ActionDo func(args ActionArgs) (any, error)

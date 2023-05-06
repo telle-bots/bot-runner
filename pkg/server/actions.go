@@ -1,0 +1,10 @@
+package server
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/telle-bots/bot-runner/pkg/logic"
+)
+
+func (s *Server) actions(ctx *fiber.Ctx) error {
+	return ctx.JSON(logic.Actions)
+}

@@ -192,12 +192,12 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 			return
 		}
 
-		action, ok := ac[actionName]
+		action, ok := ac[logic.ActionName(actionName)]
 		if !ok {
 			return
 		}
 
-		_, err = action.Do(actions.ActionArgs{
+		_, err = action(actions.ActionArgs{
 			Data: actions.SendMessageData{
 				Text: rest,
 			},

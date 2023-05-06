@@ -79,6 +79,8 @@ func (s *Server) init() {
 
 	s.app.Post("/bots", s.newBot)
 	s.app.Get("/bots", s.bots)
-	s.app.Post("/bots/:botID/enable", s.enableBot)
-	s.app.Post("/bots/:botID/disable", s.disableBot)
+	s.app.Post("/bots/:botID<int>/enable", s.enableBot)
+	s.app.Post("/bots/:botID<int>/disable", s.disableBot)
+
+	s.app.Get("/actions", s.actions)
 }
