@@ -8,7 +8,6 @@ import (
 	"github.com/telle-bots/bot-runner/pkg/bot"
 	"github.com/telle-bots/bot-runner/pkg/config"
 	"github.com/telle-bots/bot-runner/pkg/logger"
-	"github.com/telle-bots/bot-runner/pkg/logic"
 	"github.com/telle-bots/bot-runner/pkg/mongo"
 	"github.com/telle-bots/bot-runner/pkg/redis"
 	"github.com/telle-bots/bot-runner/pkg/server"
@@ -32,7 +31,6 @@ func Init() (*do.Injector, error) {
 	do.Provide(in, bot.NewTaskInspector)
 	do.Provide(in, bot.NewTaskClient)
 	do.Provide(in, bot.NewWebhookServer)
-	do.Provide(in, logic.NewActionManager)
 
 	if _, err := do.Invoke[*config.Config](in); err != nil {
 		return nil, fmt.Errorf("config: %w", err)

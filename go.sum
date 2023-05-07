@@ -67,12 +67,6 @@ github.com/mattn/go-runewidth v0.0.14/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
 github.com/montanaflynn/stats v0.7.0 h1:r3y12KyNxj/Sb/iOE46ws+3mS1+MZca1wlHQFPsY/JU=
 github.com/montanaflynn/stats v0.7.0/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
-github.com/mymmrac/telego v0.24.0 h1:0fd+v2/dToL6/DtsnWr+2saK7ZxIgLY+LI9kqJQbPEo=
-github.com/mymmrac/telego v0.24.0/go.mod h1:y557P/iMHSaOVDi5Nmy1gNelqrw+jaBMvP9guPaNJsQ=
-github.com/mymmrac/telego v0.24.1-0.20230505173520-fb7d2200c8b8 h1:XPmrT9SWuSMVlpf5p30rPStyeC3tm5g/V5k3hcyzEmM=
-github.com/mymmrac/telego v0.24.1-0.20230505173520-fb7d2200c8b8/go.mod h1:y557P/iMHSaOVDi5Nmy1gNelqrw+jaBMvP9guPaNJsQ=
-github.com/mymmrac/telego v0.24.1-0.20230505175751-59c9582aa6a9 h1:l9lTcDFaa+GC7xBXFUU6uiSBKGWB4fXp5gBigWOIwFA=
-github.com/mymmrac/telego v0.24.1-0.20230505175751-59c9582aa6a9/go.mod h1:y557P/iMHSaOVDi5Nmy1gNelqrw+jaBMvP9guPaNJsQ=
 github.com/mymmrac/telego v0.24.1-0.20230505195416-350c826bbdc5 h1:UVcZY1FyJCHXEMAN8yQGLYqNMydeXoaMAsEWbWS/80U=
 github.com/mymmrac/telego v0.24.1-0.20230505195416-350c826bbdc5/go.mod h1:y557P/iMHSaOVDi5Nmy1gNelqrw+jaBMvP9guPaNJsQ=
 github.com/philhofer/fwd v1.1.1/go.mod h1:gk3iGcWd9+svBvR0sR+KPcfE+RNWozjowpeBVG3ZVNU=

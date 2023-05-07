@@ -6,5 +6,9 @@ import (
 )
 
 func (s *Server) actions(ctx *fiber.Ctx) error {
-	return ctx.JSON(logic.Actions)
+	return ctx.JSON(logic.ActionDefinitions)
+}
+
+func (s *Server) triggers(ctx *fiber.Ctx) error {
+	return ctx.JSON(logic.TriggerDefinitions)
 }

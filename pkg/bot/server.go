@@ -17,6 +17,8 @@ import (
 	"github.com/telle-bots/bot-runner/pkg/config"
 	"github.com/telle-bots/bot-runner/pkg/logic"
 	"github.com/telle-bots/bot-runner/pkg/logic/actions"
+	"github.com/telle-bots/bot-runner/pkg/logic/conditions"
+	"github.com/telle-bots/bot-runner/pkg/logic/triggers"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
@@ -47,7 +49,6 @@ type TaskServer struct {
 	srv              *asynq.Server
 	mux              *asynq.ServeMux
 	webhookSrv       *WebhookServer
-	actionManager    *logic.ActionManager
 }
 
 func NewTaskServer(in *do.Injector) (*TaskServer, error) {
@@ -74,11 +75,6 @@ func NewTaskServer(in *do.Injector) (*TaskServer, error) {
 		return nil, fmt.Errorf("webhook server: %w", err)
 	}
 
-	actionManager, err := do.Invoke[*logic.ActionManager](in)
-	if err != nil {
-		return nil, fmt.Errorf("action manager: %w", err)
-	}
-
 	srv := asynq.NewServer(
 		redisCfg,
 		asynq.Config{
@@ -97,7 +93,6 @@ func NewTaskServer(in *do.Injector) (*TaskServer, error) {
 		srv:              srv,
 		mux:              mux,
 		webhookSrv:       webhookSrv,
-		actionManager:    actionManager,
 	}
 	runner.init()
 
@@ -177,29 +172,37 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	ac := s.actionManager.Actions(
-		actions.NewBotAction(bot),
-	)
+	ac := logic.Actions(actions.NewBotAction(bot))
 
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
-		if update.Message == nil {
-			return
-		}
-		s.log.Debug("Update ", update.UpdateID, " ", update.Message.Text)
+		tr := logic.Triggers(triggers.NewUpdateTrigger(update))
 
-		actionName, rest, ok := strings.Cut(update.Message.Text, ": ")
+		trigger, ok := tr[logic.TriggerMessageText]
 		if !ok {
 			return
 		}
 
-		action, ok := ac[logic.ActionName(actionName)]
+		if ok, err = trigger(triggers.TriggerArgs{
+			Condition: triggers.MessageTextCondition{
+				Text: conditions.StringCondition{
+					StartsWith: telego.ToPtr("Send: "),
+				},
+			},
+		}); err != nil {
+			s.log.Error(err)
+			return
+		} else if !ok {
+			return
+		}
+
+		action, ok := ac[logic.ActionSendMessage]
 		if !ok {
 			return
 		}
 
 		_, err = action(actions.ActionArgs{
 			Data: actions.SendMessageData{
-				Text: rest,
+				Text: strings.TrimPrefix(update.Message.Text, "Send: "),
 			},
 			Context: actions.SendMessageContext{
 				ChatID: update.Message.Chat.ID,
@@ -207,6 +210,7 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 		})
 		if err != nil {
 			s.log.Error(err)
+			return
 		}
 	})
 

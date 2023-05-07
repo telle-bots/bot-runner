@@ -83,4 +83,5 @@ func (s *Server) init() {
 	s.app.Post("/bots/:botID<int>/disable", s.disableBot)
 
 	s.app.Get("/actions", s.actions)
+	s.app.Get("/triggers", s.triggers)
 }

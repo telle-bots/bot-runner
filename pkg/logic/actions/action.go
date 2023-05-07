@@ -5,40 +5,40 @@ import (
 	"fmt"
 )
 
-type Action struct {
+type ActionDefinition struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description,omitempty"`
 	Arguments   json.RawMessage `json:"arguments,omitempty"`
 	Returns     json.RawMessage `json:"returns,omitempty"`
 }
 
-type ActionDo func(args ActionArgs) (any, error)
+type Action func(args ActionArgs) (any, error)
 
 type ActionArgs struct {
 	Data    any
 	Context any
 }
 
-func ActionArgsAs[D, C any](args ActionArgs) (data D, context C, err error) {
-	if data, err = ActionDataAs[D](args); err != nil {
+func ActionArgsAs[Data, Context any](args ActionArgs) (data Data, context Context, err error) {
+	if data, err = ActionDataAs[Data](args); err != nil {
 		return
 	}
-	if context, err = ActionContextAs[C](args); err != nil {
+	if context, err = ActionContextAs[Context](args); err != nil {
 		return
 	}
 	return
 }
 
-func ActionDataAs[T any](args ActionArgs) (T, error) {
-	data, ok := args.Data.(T)
+func ActionDataAs[Data any](args ActionArgs) (Data, error) {
+	data, ok := args.Data.(Data)
 	if !ok {
 		return data, fmt.Errorf("invalida data type %T", data)
 	}
 	return data, nil
 }
 
-func ActionContextAs[T any](args ActionArgs) (T, error) {
-	context, ok := args.Context.(T)
+func ActionContextAs[Context any](args ActionArgs) (Context, error) {
+	context, ok := args.Context.(Context)
 	if !ok {
 		return context, fmt.Errorf("invalida cotext type %T", context)
 	}
