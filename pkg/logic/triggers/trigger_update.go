@@ -5,21 +5,21 @@ import (
 	"github.com/telle-bots/bot-runner/pkg/logic/conditions"
 )
 
-type UpdateTrigger struct {
+type TriggerUpdate struct {
 	update telego.Update
 }
 
-func NewUpdateTrigger(update telego.Update) *UpdateTrigger {
-	return &UpdateTrigger{
+func NewTriggerUpdate(update telego.Update) *TriggerUpdate {
+	return &TriggerUpdate{
 		update: update,
 	}
 }
 
 type MessageTextCondition struct {
-	Text conditions.StringCondition `json:"text" name:"Text"`
+	Text conditions.ConditionString `json:"text" name:"Text"`
 }
 
-func (t *UpdateTrigger) MessageText(args TriggerArgs) (bool, error) {
+func (t *TriggerUpdate) MessageText(args TriggerArgs) (bool, error) {
 	if t.update.Message == nil {
 		return false, nil
 	}

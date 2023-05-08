@@ -1,8 +1,6 @@
 package logic
 
-import (
-	"github.com/telle-bots/bot-runner/pkg/logic/triggers"
-)
+import "github.com/telle-bots/bot-runner/pkg/logic/triggers"
 
 type TriggerName string
 
@@ -17,8 +15,8 @@ var TriggerDefinitions = map[TriggerName]triggers.TriggerDefinition{
 	},
 }
 
-func Triggers(updateTrigger *triggers.UpdateTrigger) map[TriggerName]triggers.Trigger {
+func Triggers(triggerUpdate *triggers.TriggerUpdate) map[TriggerName]triggers.Trigger {
 	return map[TriggerName]triggers.Trigger{
-		TriggerMessageText: updateTrigger.MessageText,
+		TriggerMessageText: triggerUpdate.MessageText,
 	}
 }

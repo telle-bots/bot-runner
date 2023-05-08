@@ -5,12 +5,12 @@ import (
 	tu "github.com/mymmrac/telego/telegoutil"
 )
 
-type BotAction struct {
+type ActionBot struct {
 	bot *telego.Bot
 }
 
-func NewBotAction(bot *telego.Bot) *BotAction {
-	return &BotAction{
+func NewActionBot(bot *telego.Bot) *ActionBot {
+	return &ActionBot{
 		bot: bot,
 	}
 }
@@ -27,13 +27,13 @@ type SendMessageReturns struct {
 	MessageID int64 `json:"messageID" name:"Message ID"`
 }
 
-func (b *BotAction) SendMessage(args ActionArgs) (any, error) {
+func (a *ActionBot) SendMessage(args ActionArgs) (any, error) {
 	data, context, err := ActionArgsAs[SendMessageData, SendMessageContext](args)
 	if err != nil {
 		return nil, err
 	}
 
-	msg, err := b.bot.SendMessage(&telego.SendMessageParams{
+	msg, err := a.bot.SendMessage(&telego.SendMessageParams{
 		ChatID: tu.ID(context.ChatID),
 		Text:   data.Text,
 	})

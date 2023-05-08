@@ -16,8 +16,8 @@ var ActionDefinitions = map[ActionName]actions.ActionDefinition{
 	},
 }
 
-func Actions(botAction *actions.BotAction) map[ActionName]actions.Action {
+func Actions(actionBot *actions.ActionBot) map[ActionName]actions.Action {
 	return map[ActionName]actions.Action{
-		ActionSendMessage: botAction.SendMessage,
+		ActionSendMessage: actionBot.SendMessage,
 	}
 }

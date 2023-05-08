@@ -172,10 +172,10 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	ac := logic.Actions(actions.NewBotAction(bot))
+	ac := logic.Actions(actions.NewActionBot(bot))
 
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
-		tr := logic.Triggers(triggers.NewUpdateTrigger(update))
+		tr := logic.Triggers(triggers.NewTriggerUpdate(update))
 
 		trigger, ok := tr[logic.TriggerMessageText]
 		if !ok {
@@ -184,7 +184,7 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 
 		if ok, err = trigger(triggers.TriggerArgs{
 			Condition: triggers.MessageTextCondition{
-				Text: conditions.StringCondition{
+				Text: conditions.ConditionString{
 					StartsWith: telego.ToPtr("Send: "),
 				},
 			},
