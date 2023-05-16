@@ -2,7 +2,7 @@ package triggers
 
 import (
 	"github.com/mymmrac/telego"
-	"github.com/telle-bots/bot-runner/pkg/logic/conditions"
+	"github.com/telle-bots/bot-runner/pkg/logic_1/conditions"
 )
 
 type TriggerUpdate struct {

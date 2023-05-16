@@ -1,6 +1,6 @@
-package logic
+package logic_1
 
-import "github.com/telle-bots/bot-runner/pkg/logic/triggers"
+import "github.com/telle-bots/bot-runner/pkg/logic_1/triggers"
 
 type TriggerName string
 

@@ -1,37 +1,60 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/telle-bots/bot-runner/pkg/logic"
+	"github.com/telle-bots/bot-runner/pkg/logic_2"
 )
 
-type Button struct {
-	Name string `json:"name" name:"Name"`
-}
-
-type Keyboard struct {
-	ButtonWidth float64   `json:"button_width" name:"Button width"`
-	Buttons     []Button  `json:"buttons"      name:"Buttons"`
-	Indexes     []int64   `json:"indexes"      name:"Indexes"`
-	Points      [][]int64 `json:"points"       name:"Points"`
-}
-
-type SendMsg struct {
-	ChatID       int64                       `json:"chat_id"      name:"Chat ID"`
-	Text         string                      `json:"text"         name:"Text" desc:"Message text to send"`
-	Keyboard     *Keyboard                   `json:"keyboard"     name:"Keyboard"`
-	Languages    map[string]bool             `json:"languages"    name:"Languages" desc:"Supported languages"`
-	Users        map[int64]struct{}          `json:"users"        name:"Users"`
-	UserSettings map[int64]map[string]string `json:"userSettings" name:"User settings"`
-	SliceOfMaps  []map[bool]string           `json:"sliceOfMaps"  name:"kk"`
-}
-
 func main() {
-	start := time.Now()
-	data := logic.MustStructureOf[SendMsg]()
-	fmt.Println(time.Since(start))
+	workflows := logic_2.Workflows{
+		{
+			Name: "Ping - Time - Pong",
+			Triggers: []logic_2.Trigger{
+				{
+					Type: logic_2.TriggerTypeBot,
+					Events: []logic_2.Event{
+						{
+							Type: logic_2.EventTypeUpdate,
+							Conditions: []logic_2.EventCondition{
+								{
+									Type: logic_2.EventConditionTypeMessage,
+									Data: []byte(`{"field": "update.message.text", "equal": "Ping"}`),
+								},
+							},
+						},
+					},
+				},
+			},
+			Conditions: []logic_2.ConditionSource{
+				{
+					Type: logic_2.ConditionSourceTypeClock,
+					Conditions: []logic_2.SourceCondition{
+						{
+							Type: logic_2.SourceConditionTypeTime,
+							Data: []byte(`{"field": "now.minutes", "even": true}`),
+						},
+					},
+				},
+			},
+			Actions: []logic_2.ActionSource{
+				{
+					Type: logic_2.ActionSourceTypeBot,
+					Actions: []logic_2.Action{
+						{
+							Type: logic_2.ActionTypeSendMessage,
+							Data: []byte(`{"text": "Pong", "chat_id": "update.message.chat.id"}`),
+						},
+					},
+				},
+			},
+		},
+	}
 
+	data, err := json.Marshal(workflows)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println(string(data))
 }

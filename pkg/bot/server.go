@@ -8,17 +8,12 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/hibiken/asynq"
 	"github.com/mymmrac/telego"
 	th "github.com/mymmrac/telego/telegohandler"
 	"github.com/samber/do"
 	"github.com/telle-bots/bot-runner/pkg/config"
-	"github.com/telle-bots/bot-runner/pkg/logic"
-	"github.com/telle-bots/bot-runner/pkg/logic/actions"
-	"github.com/telle-bots/bot-runner/pkg/logic/conditions"
-	"github.com/telle-bots/bot-runner/pkg/logic/triggers"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
@@ -172,46 +167,58 @@ func (s *TaskServer) runBotTask(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 
-	ac := logic.Actions(actions.NewActionBot(bot))
+	// var wfs logic_2.Workflows
+
+	// ac := logic.Actions(actions.NewActionBot(bot))
 
 	bh.Handle(func(bot *telego.Bot, update telego.Update) {
-		tr := logic.Triggers(triggers.NewTriggerUpdate(update))
+		// logic_2.ProcessWorkflows(
+		// 	s.log,
+		// 	wfs,
+		// 	[]logic_2.TriggerType{logic_2.TriggerTypeBot},
+		// 	[]logic_2.EventType{logic_2.EventTypeUpdate},
+		// 	update,
+		// )
 
-		trigger, ok := tr[logic.TriggerMessageText]
-		if !ok {
-			return
-		}
+		/*
+			tr := logic.Triggers(triggers.NewTriggerUpdate(update))
 
-		if ok, err = trigger(triggers.TriggerArgs{
-			Condition: triggers.MessageTextCondition{
-				Text: conditions.ConditionString{
-					StartsWith: telego.ToPtr("Send: "),
+			trigger, ok := tr[logic.TriggerMessageText]
+			if !ok {
+				return
+			}
+
+			if ok, err = trigger(triggers.TriggerArgs{
+				Condition: triggers.MessageTextCondition{
+					Text: conditions.ConditionString{
+						StartsWith: telego.ToPtr("Send: "),
+					},
 				},
-			},
-		}); err != nil {
-			s.log.Error(err)
-			return
-		} else if !ok {
-			return
-		}
+			}); err != nil {
+				s.log.Error(err)
+				return
+			} else if !ok {
+				return
+			}
 
-		action, ok := ac[logic.ActionSendMessage]
-		if !ok {
-			return
-		}
+			action, ok := ac[logic.ActionSendMessage]
+			if !ok {
+				return
+			}
 
-		_, err = action(actions.ActionArgs{
-			Data: actions.SendMessageData{
-				Text: strings.TrimPrefix(update.Message.Text, "Send: "),
-			},
-			Context: actions.SendMessageContext{
-				ChatID: update.Message.Chat.ID,
-			},
-		})
-		if err != nil {
-			s.log.Error(err)
-			return
-		}
+			_, err = action(actions.ActionArgs{
+				Data: actions.SendMessageData{
+					Text: strings.TrimPrefix(update.Message.Text, "Send: "),
+				},
+				Context: actions.SendMessageContext{
+					ChatID: update.Message.Chat.ID,
+				},
+			})
+			if err != nil {
+				s.log.Error(err)
+				return
+			}
+		*/
 	})
 
 	go bh.Start()
