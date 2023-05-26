@@ -16,7 +16,8 @@ type Empty struct{}
 type ContextValue string
 
 const (
-	BotContextValue ContextValue = "bot"
+	BotContextValue       ContextValue = "bot"
+	BotUpdateContextValue ContextValue = "bot-update"
 )
 
 var Nodes = map[NodeID]json.Marshaler{
@@ -25,12 +26,12 @@ var Nodes = map[NodeID]json.Marshaler{
 }
 
 type UpdateEventOut struct {
-	UpdateID int64                  `json:"updateID"`
+	UpdateID int                    `json:"updateID"`
 	Message  *UpdateEventOutMessage `json:"message,omitempty"`
 }
 
 type UpdateEventOutMessage struct {
-	ID   int64              `json:"id"`
+	ID   int                `json:"id"`
 	Chat UpdateEventOutChat `json:"chat"`
 	Text string             `json:"text"`
 }
@@ -43,13 +44,28 @@ var BotUpdateEvent = &Node[Empty, UpdateEventOut]{
 	ID:   uuid.MustParse("ab2283b9-2553-474f-9d8c-14267eb026af"),
 	Type: NodeTypeEvent,
 	Func: func(ctx context.Context, _ *Empty) (*UpdateEventOut, error) {
-		return &UpdateEventOut{
-			UpdateID: 1,
-			Message: &UpdateEventOutMessage{
-				ID:   2,
-				Text: "Test",
-			},
-		}, nil
+		update, ok := ctx.Value(BotUpdateContextValue).(telego.Update)
+		if !ok {
+			return nil, fmt.Errorf("no context value %q", BotUpdateContextValue)
+		}
+
+		upd := &UpdateEventOut{
+			UpdateID: update.UpdateID,
+		}
+
+		if update.Message != nil {
+			message := update.Message
+
+			upd.Message = &UpdateEventOutMessage{
+				ID: message.MessageID,
+				Chat: UpdateEventOutChat{
+					ID: message.Chat.ID,
+				},
+				Text: message.Text,
+			}
+		}
+
+		return upd, nil
 	},
 }
 
