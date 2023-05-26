@@ -5,7 +5,16 @@ type Connection struct {
 	Destination ConnectionIO `json:"destination"`
 }
 
+type IOType uint
+
+const (
+	IOTypeInOut IOType = iota
+	IOTypeTrigger
+	IOTypeUserValue
+)
+
 type ConnectionIO struct {
 	NodeID   NodeID `json:"nodeID"`
-	DataPath string `json:"dataPath"`
+	Type     IOType `json:"type"`
+	DataPath string `json:"dataPath,omitempty"`
 }

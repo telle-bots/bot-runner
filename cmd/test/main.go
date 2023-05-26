@@ -17,12 +17,12 @@ func main() {
 			Connections: []logic.Connection{
 				{
 					Source: logic.ConnectionIO{
-						NodeID:   logic.BotUpdateEvent.ID,
-						DataPath: "trigger",
+						NodeID: logic.BotUpdateEvent.ID,
+						Type:   logic.IOTypeTrigger,
 					},
 					Destination: logic.ConnectionIO{
-						NodeID:   logic.BotSendMessageAction.ID,
-						DataPath: "trigger",
+						NodeID: logic.BotSendMessageAction.ID,
+						Type:   logic.IOTypeTrigger,
 					},
 				},
 				{
@@ -37,8 +37,8 @@ func main() {
 				},
 				{
 					Source: logic.ConnectionIO{
-						NodeID:   logic.NilNodeID,
-						DataPath: "userValue",
+						NodeID: logic.NilNodeID,
+						Type:   logic.IOTypeUserValue,
 					},
 					Destination: logic.ConnectionIO{
 						NodeID:   logic.BotSendMessageAction.ID,
