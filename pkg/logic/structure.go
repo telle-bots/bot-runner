@@ -1,4 +1,4 @@
-package logic_1
+package logic
 
 import (
 	"encoding/json"
@@ -30,13 +30,13 @@ type valueType uint
 
 const (
 	_ valueType = iota
-	typeStruct
-	typeArray
-	typeMap
-	typeString
-	typeBool
-	typeInteger
-	typeFloat
+	valueTypeStruct
+	valueTypeArray
+	valueTypeMap
+	valueTypeString
+	valueTypeBool
+	valueTypeInteger
+	valueTypeFloat
 )
 
 type elemValue struct {
@@ -94,7 +94,7 @@ func structureOfStruct(v any) (*structureValue, error) {
 
 func structureOfField(field reflect.StructField) (fieldValue, error) {
 	tags := field.Tag
-	name := strings.TrimSpace(tags.Get("name"))
+	name := strings.TrimSuffix(tags.Get("json"), ",omitempty")
 	if name == "" {
 		return fieldValue{}, fmt.Errorf("no name provided")
 	}
@@ -114,15 +114,15 @@ func structureOfField(field reflect.StructField) (fieldValue, error) {
 
 	switch fieldKind {
 	case reflect.String:
-		f.Type = typeString
+		f.Type = valueTypeString
 	case reflect.Bool:
-		f.Type = typeBool
+		f.Type = valueTypeBool
 	case reflect.Int64:
-		f.Type = typeInteger
+		f.Type = valueTypeInteger
 	case reflect.Float64:
-		f.Type = typeFloat
+		f.Type = valueTypeFloat
 	case reflect.Struct:
-		f.Type = typeStruct
+		f.Type = valueTypeStruct
 
 		fv := reflect.Zero(fieldType)
 		if !fv.CanInterface() {
@@ -136,7 +136,7 @@ func structureOfField(field reflect.StructField) (fieldValue, error) {
 
 		f.Struct = fs
 	case reflect.Slice:
-		f.Type = typeArray
+		f.Type = valueTypeArray
 
 		elemType := fieldType.Elem()
 		value, err := structureOfElem(elemType)
@@ -146,7 +146,7 @@ func structureOfField(field reflect.StructField) (fieldValue, error) {
 
 		f.Array = value
 	case reflect.Map:
-		f.Type = typeMap
+		f.Type = valueTypeMap
 
 		f.Map = &keyValue{}
 
@@ -176,13 +176,13 @@ func structureOfKey(typ reflect.Type) (valueType, error) {
 	keyKind := typ.Kind()
 	switch keyKind {
 	case reflect.String:
-		keyType = typeString
+		keyType = valueTypeString
 	case reflect.Bool:
-		keyType = typeBool
+		keyType = valueTypeBool
 	case reflect.Int64:
-		keyType = typeInteger
+		keyType = valueTypeInteger
 	case reflect.Float64:
-		keyType = typeFloat
+		keyType = valueTypeFloat
 	default:
 		return 0, fmt.Errorf("unsupported map key kind %q", keyKind)
 	}
@@ -196,15 +196,15 @@ func structureOfElem(typ reflect.Type) (*elemValue, error) {
 	elemKind := typ.Kind()
 	switch elemKind {
 	case reflect.String:
-		v.Type = typeString
+		v.Type = valueTypeString
 	case reflect.Bool:
-		v.Type = typeBool
+		v.Type = valueTypeBool
 	case reflect.Int64:
-		v.Type = typeInteger
+		v.Type = valueTypeInteger
 	case reflect.Float64:
-		v.Type = typeFloat
+		v.Type = valueTypeFloat
 	case reflect.Struct:
-		v.Type = typeStruct
+		v.Type = valueTypeStruct
 
 		fv := reflect.Zero(typ)
 		if !fv.CanInterface() {
@@ -218,7 +218,7 @@ func structureOfElem(typ reflect.Type) (*elemValue, error) {
 
 		v.Struct = fs
 	case reflect.Slice:
-		v.Type = typeArray
+		v.Type = valueTypeArray
 
 		elemType := typ.Elem()
 		value, err := structureOfElem(elemType)
@@ -228,7 +228,7 @@ func structureOfElem(typ reflect.Type) (*elemValue, error) {
 
 		v.Array = value
 	case reflect.Map:
-		v.Type = typeMap
+		v.Type = valueTypeMap
 
 		v.Map = &keyValue{}
 
