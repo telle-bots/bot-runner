@@ -18,6 +18,16 @@ func main() {
 				{
 					Source: logic.ConnectionIO{
 						NodeID:   logic.BotUpdateEvent.ID,
+						DataPath: "trigger",
+					},
+					Destination: logic.ConnectionIO{
+						NodeID:   logic.BotSendMessageAction.ID,
+						DataPath: "trigger",
+					},
+				},
+				{
+					Source: logic.ConnectionIO{
+						NodeID:   logic.BotUpdateEvent.ID,
 						DataPath: "output.message.chat.id",
 					},
 					Destination: logic.ConnectionIO{

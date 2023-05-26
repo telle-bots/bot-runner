@@ -26,12 +26,12 @@ var Nodes = map[NodeID]json.Marshaler{
 }
 
 type UpdateEventOut struct {
-	UpdateID int                    `json:"updateID"`
+	UpdateID int64                  `json:"updateID"`
 	Message  *UpdateEventOutMessage `json:"message,omitempty"`
 }
 
 type UpdateEventOutMessage struct {
-	ID   int                `json:"id"`
+	ID   int64              `json:"id"`
 	Chat UpdateEventOutChat `json:"chat"`
 	Text string             `json:"text"`
 }
@@ -50,14 +50,14 @@ var BotUpdateEvent = &Node[Empty, UpdateEventOut]{
 		}
 
 		upd := &UpdateEventOut{
-			UpdateID: update.UpdateID,
+			UpdateID: int64(update.UpdateID),
 		}
 
 		if update.Message != nil {
 			message := update.Message
 
 			upd.Message = &UpdateEventOutMessage{
-				ID: message.MessageID,
+				ID: int64(message.MessageID),
 				Chat: UpdateEventOutChat{
 					ID: message.Chat.ID,
 				},
