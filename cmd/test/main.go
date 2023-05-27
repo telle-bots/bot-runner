@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/telle-bots/bot-runner/pkg/logic"
+	"github.com/telle-bots/bot-runner/pkg/logic/nodes"
 )
 
 func main() {
@@ -16,8 +17,8 @@ func main() {
 	flow := logic.Flow{
 		Graph: logic.Graph{
 			Nodes: logic.GraphNodes{
-				updateNode: logic.BotUpdateEvent.ID,
-				sendNode:   logic.BotSendMessageAction.ID,
+				updateNode: nodes.BotUpdateEvent.ID,
+				sendNode:   nodes.BotSendMessageAction.ID,
 			},
 			Connections: []logic.Connection{
 				{
@@ -67,7 +68,7 @@ func main() {
 
 	fmt.Println()
 
-	nodeData, err := json.Marshal(logic.Nodes)
+	nodeData, err := json.Marshal(nodes.Nodes)
 	if err != nil {
 		panic(err)
 	}
