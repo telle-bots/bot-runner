@@ -4,35 +4,40 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/telle-bots/bot-runner/pkg/logic"
 )
 
 func main() {
+	updateNode := uuid.New()
+	sendNode := uuid.New()
+
 	flow := logic.Flow{
 		Graph: logic.Graph{
-			Nodes: []logic.NodeID{
-				logic.BotUpdateEvent.ID,
-				logic.BotSendMessageAction.ID,
+			Nodes: logic.GraphNodes{
+				updateNode: logic.BotUpdateEvent.ID,
+				sendNode:   logic.BotSendMessageAction.ID,
 			},
 			Connections: []logic.Connection{
 				{
 					Source: logic.ConnectionIO{
-						NodeID: logic.BotUpdateEvent.ID,
+						NodeID: updateNode,
 						Type:   logic.IOTypeTrigger,
 					},
 					Destination: logic.ConnectionIO{
-						NodeID: logic.BotSendMessageAction.ID,
+						NodeID: sendNode,
 						Type:   logic.IOTypeTrigger,
 					},
 				},
 				{
 					Source: logic.ConnectionIO{
-						NodeID:   logic.BotUpdateEvent.ID,
-						DataPath: "output.message.chat.id",
+						NodeID:   updateNode,
+						DataPath: "message.chat.id",
 					},
 					Destination: logic.ConnectionIO{
-						NodeID:   logic.BotSendMessageAction.ID,
-						DataPath: "input.chatID",
+						NodeID:   sendNode,
+						DataPath: "chatID",
 					},
 				},
 				{
@@ -41,15 +46,15 @@ func main() {
 						Type:   logic.IOTypeUserValue,
 					},
 					Destination: logic.ConnectionIO{
-						NodeID:   logic.BotSendMessageAction.ID,
-						DataPath: "input.text",
+						NodeID:   sendNode,
+						DataPath: "text",
 					},
 				},
 			},
 		},
 		UserValues: logic.UserValues{
-			logic.BotSendMessageAction.ID: map[string]any{
-				"input.text": "Test text",
+			sendNode: map[string]any{
+				"text": "Test text",
 			},
 		},
 	}
