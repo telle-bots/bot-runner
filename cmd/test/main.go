@@ -15,6 +15,7 @@ func main() {
 	sendNode := uuid.New()
 
 	flow := logic.Flow{
+		ID: uuid.New(),
 		Graph: logic.Graph{
 			Nodes: logic.GraphNodes{
 				updateNode: nodes.BotUpdateEvent.ID,
